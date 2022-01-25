@@ -9,7 +9,7 @@ import (
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/status"
 
-	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/notify/fcm"
 )
 
 // InitFCMClient use for initialize FCM Client.

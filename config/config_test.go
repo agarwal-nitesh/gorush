@@ -134,7 +134,6 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 
 	// gRPC
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.GRPC.Enabled)
-	assert.Equal(suite.T(), "9000", suite.ConfGorushDefault.GRPC.Port)
 }
 
 func (suite *ConfigTestSuite) TestValidateConf() {
@@ -202,17 +201,7 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), "localhost:6379", suite.ConfGorush.Stat.Redis.Addr)
 	assert.Equal(suite.T(), "", suite.ConfGorush.Stat.Redis.Password)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Stat.Redis.DB)
-
-	assert.Equal(suite.T(), "bolt.db", suite.ConfGorush.Stat.BoltDB.Path)
 	assert.Equal(suite.T(), "gorush", suite.ConfGorush.Stat.BoltDB.Bucket)
-
-	assert.Equal(suite.T(), "bunt.db", suite.ConfGorush.Stat.BuntDB.Path)
-	assert.Equal(suite.T(), "level.db", suite.ConfGorush.Stat.LevelDB.Path)
-	assert.Equal(suite.T(), "badger.db", suite.ConfGorush.Stat.BadgerDB.Path)
-
-	// gRPC
-	assert.Equal(suite.T(), false, suite.ConfGorush.GRPC.Enabled)
-	assert.Equal(suite.T(), "9000", suite.ConfGorush.GRPC.Port)
 }
 
 func TestConfigTestSuite(t *testing.T) {

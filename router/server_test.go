@@ -17,7 +17,7 @@ import (
 	"github.com/appleboy/gorush/notify"
 	"github.com/appleboy/gorush/status"
 
-	"github.com/appleboy/gofight/v2"
+	"github.com/appleboy/gorush/status/gofight"
 	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-queue/queue"

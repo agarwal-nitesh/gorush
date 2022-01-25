@@ -6,10 +6,6 @@ import (
 	"github.com/appleboy/gorush/config"
 	"github.com/appleboy/gorush/logx"
 	"github.com/appleboy/gorush/storage"
-	"github.com/appleboy/gorush/storage/badger"
-	"github.com/appleboy/gorush/storage/boltdb"
-	"github.com/appleboy/gorush/storage/buntdb"
-	"github.com/appleboy/gorush/storage/leveldb"
 	"github.com/appleboy/gorush/storage/memory"
 	"github.com/appleboy/gorush/storage/redis"
 
@@ -59,14 +55,6 @@ func InitAppStatus(conf *config.ConfYaml) error {
 		StatStorage = memory.New()
 	case "redis":
 		StatStorage = redis.New(conf)
-	case "boltdb":
-		StatStorage = boltdb.New(conf)
-	case "buntdb":
-		StatStorage = buntdb.New(conf)
-	case "leveldb":
-		StatStorage = leveldb.New(conf)
-	case "badger":
-		StatStorage = badger.New(conf)
 	default:
 		logx.LogError.Error("storage error: can't find storage driver")
 		return errors.New("can't find storage driver")

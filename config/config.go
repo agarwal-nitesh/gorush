@@ -38,10 +38,6 @@ core:
     folder: ".cache" # folder for storing TLS certificates
     host: "" # which domains the Let's Encrypt will attempt
 
-grpc:
-  enabled: false # enable gRPC server
-  port: 9000
-
 api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
@@ -147,7 +143,6 @@ type SectionCore struct {
 	HTTPProxy       string         `yaml:"http_proxy"`
 	FeedbackURL     string         `yaml:"feedback_hook_url"`
 	FeedbackTimeout int64          `yaml:"feedback_timeout"`
-	PID             SectionPID     `yaml:"pid"`
 	AutoTLS         SectionAutoTLS `yaml:"auto_tls"`
 }
 
@@ -348,9 +343,6 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Core.KeyBase64 = viper.GetString("core.key_base64")
 	conf.Core.MaxNotification = int64(viper.GetInt("core.max_notification"))
 	conf.Core.HTTPProxy = viper.GetString("core.http_proxy")
-	conf.Core.PID.Enabled = viper.GetBool("core.pid.enabled")
-	conf.Core.PID.Path = viper.GetString("core.pid.path")
-	conf.Core.PID.Override = viper.GetBool("core.pid.override")
 	conf.Core.AutoTLS.Enabled = viper.GetBool("core.auto_tls.enabled")
 	conf.Core.AutoTLS.Folder = viper.GetString("core.auto_tls.folder")
 	conf.Core.AutoTLS.Host = viper.GetString("core.auto_tls.host")

@@ -12,7 +12,7 @@ import (
 	"github.com/appleboy/gorush/core"
 	"github.com/appleboy/gorush/logx"
 
-	"github.com/appleboy/go-fcm"
+	"github.com/appleboy/gorush/notify/fcm"
 	"github.com/golang-queue/queue"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/msalihkarakasli/go-hms-push/push/model"

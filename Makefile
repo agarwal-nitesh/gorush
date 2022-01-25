@@ -2,27 +2,15 @@ DIST := dist
 EXECUTABLE := gorush
 
 GO ?= go
-DEPLOY_ACCOUNT := appleboy
 DEPLOY_IMAGE := $(EXECUTABLE)
 GOFMT ?= gofumpt -l -s -extra
 
-TARGETS ?= linux darwin windows
 ARCHS ?= amd64
 GOFILES := $(shell find . -name "*.go" -type f)
 TAGS ?= sqlite
 LDFLAGS ?= -X 'main.Version=$(VERSION)'
 
-ifneq ($(shell uname), Darwin)
-	EXTLDFLAGS = -extldflags "-static" $(null)
-else
-	EXTLDFLAGS =
-endif
 
-ifneq ($(DRONE_TAG),)
-	VERSION ?= $(DRONE_TAG)
-else
-	VERSION ?= $(shell git describe --tags --always || git rev-parse --short HEAD)
-endif
 
 .PHONY: all
 all: build
@@ -59,12 +47,6 @@ fmt-check:
 
 vet:
 	$(GO) vet ./...
-
-embedmd:
-	@hash embedmd > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install github.com/campoy/embedmd@master; \
-	fi
-	embedmd -d *.md
 
 lint:
 	@hash revive > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
@@ -107,12 +89,6 @@ release: release-dirs release-build release-copy release-compress release-check
 release-dirs:
 	mkdir -p $(DIST)/binaries $(DIST)/release
 
-release-build:
-	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
-		$(GO) install github.com/mitchellh/gox@v1.0.1; \
-	fi
-	gox -os="$(TARGETS)" -arch="$(ARCHS)" -tags="$(TAGS)" -ldflags="$(EXTLDFLAGS)-s -w $(LDFLAGS)" -output="$(DIST)/binaries/$(EXECUTABLE)-$(VERSION)-{{.OS}}-{{.Arch}}"
-
 .PHONY: release-compress
 release-compress:
 	@hash gxz > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
@@ -126,35 +102,6 @@ release-copy:
 release-check:
 	cd $(DIST)/release; $(foreach file,$(wildcard $(DIST)/release/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
-build_linux_amd64:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/amd64/$(DEPLOY_IMAGE)
-
-build_linux_i386:
-	CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/i386/$(DEPLOY_IMAGE)
-
-build_linux_arm64:
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/arm64/$(DEPLOY_IMAGE)
-
-build_linux_arm:
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/arm/$(DEPLOY_IMAGE)
-
-build_linux_lambda:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/linux/lambda/$(DEPLOY_IMAGE)
-
-build_darwin_amd64:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/amd64/$(DEPLOY_IMAGE)
-
-build_darwin_i386:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=386 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/i386/$(DEPLOY_IMAGE)
-
-build_darwin_arm64:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/arm64/$(DEPLOY_IMAGE)
-
-build_darwin_arm:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm GOARM=7 go build -a -tags '$(TAGS)' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/arm/$(DEPLOY_IMAGE)
-
-build_darwin_lambda:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -tags 'lambda' -ldflags '$(EXTLDFLAGS)-s -w $(LDFLAGS)' -o release/darwin/lambda/$(DEPLOY_IMAGE)
 
 clean:
 	$(GO) clean -modcache -x -i ./...
@@ -162,15 +109,6 @@ clean:
 	find . -name *.tar.gz -delete
 	find . -name *.db -delete
 	-rm -rf release dist .cover
-
-generate_proto_js:
-	npm install grpc-tools
-	protoc -I rpc/proto rpc/proto/gorush.proto --js_out=import_style=commonjs,binary:rpc/example/node/ --grpc_out=rpc/example/node/ --plugin=protoc-gen-grpc="node_modules/.bin/grpc_tools_node_protoc_plugin"
-
-generate_proto_go:
-	protoc -I rpc/proto rpc/proto/gorush.proto --go_out=rpc/proto --go-grpc_out=require_unimplemented_servers=false:rpc/proto
-
-generate_proto: generate_proto_go generate_proto_js
 
 version:
 	@echo $(VERSION)

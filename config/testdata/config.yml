@@ -25,10 +25,6 @@ core:
     folder: ".cache" # folder for storing TLS certificates
     host: "" # which domains the Let's Encrypt will attempt
 
-grpc:
-  enabled: false # enable gRPC server
-  port: 9000
-
 api:
   push_uri: "/api/push"
   stat_go_uri: "/api/stat/go"
@@ -91,12 +87,3 @@ stat:
     addr: "localhost:6379" # if cluster is true, you may set this to "localhost:6379,localhost:6380,localhost:6381"
     password: ""
     db: 0
-  boltdb:
-    path: "bolt.db"
-    bucket: "gorush"
-  buntdb:
-    path: "bunt.db"
-  leveldb:
-    path: "level.db"
-  badgerdb:
-    path: "badger.db"
